@@ -67,3 +67,42 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# Custom project additions
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# IDEs & Microcontroller Build Tools
+.vscode/
+.idea/
+.arduinoIDE/
+*.elf
+*.bin
+*.hex
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.clang_complete
+.gcc_flags.json
+
+# VS Code (when used with PlatformIO)
+.vscode/.browse.c_cpp_properties.json
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
