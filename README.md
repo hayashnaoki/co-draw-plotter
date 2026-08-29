@@ -1,70 +1,65 @@
 # CoDraw Plotter
-A merged I/O physical arm interface for *Syn-Sketching*, converting real-time encoder gestures directly into physical AI co-drawing.
+A merged I/O arm interface for *Syn-Sketching*, converting real-time encoder gestures directly into physical AI co-drawing.
 
-## Background: The Paradigm Shift in Design Tools
+## Background
+Design tools have shifted through three eras:
+1. Paper & Foam (Analog): Instant physical feedback and tactile joy, but limited execution speed and accuracy.
+2. CAD & 3D Printers (Digital): High precision, but disconnected by input-output separation and long iteration lags.
+3. Generative AI (Prompting): Fast, but turns creators into passive "prompt-and-wait" observers.
 
-CoDraw bridges three distinct eras of design to unlock a new paradigm of human-AI creation:
+## Concept: Syn-Sketching & Merged I/O
+Instead of taking turns or generating images on a screen, creator and the AI weave a single sketch together on the exact same piece of paper in real time.
 
-1. **Analog & Physical Era (Paper & Foam):** Ultra-low latency and rich tactile feedback, but limited by manual execution speed and precision.
-2. **Digital & CAD Era (3D Printing & CNC):** Unmatched precision, but severely disconnected by input-output separation and long iteration lags.
-3. **Generative AI Era (Passive Prompting):** Asynchronous "prompt-and-wait" text/image generation that degrades human agency and recycles database averages.
+1. Syn-Sketching & The Joy of Making
+    - Hands-On Agency: Preserves the friction of paper, the flow of ink, and the satisfaction of drawing.
+    - Creative Friction: Welcomes mechanical quirks, hand tremors, and line overlaps to spark unexpected ideas instead of clean, sterile database averages.
+    - Gestural Dialogue: Talk to the AI through the speed and weight of your pen strokes, not rigid text prompts.
 
-## Concept: Syn-Sketching, Real-Time I/O & Creative Friction
-CoDraw is built around the core ethos of **restoring the Joy of Making** in an increasingly automated world. It introduces **Syn-Sketching**—a paradigm shift away from traditional turn-based exchanges toward simultaneous, co-creative emergence. Rather than a passive "wait-for-results" task, human and AI **weave a single, shared sketch on the same physical paper in real time**.
+2. Physical Input & Live CAD Output
+    - One Shared Loop: Your hand input and the robot's pen output happen on the same sheet at the same time.
+    - Instant CAD Vectors: As you draw, the encoder arm streams live kinematic data to generate editable curves directly in CAD. No scanning or manual tracing required.
 
-### 1. Syn-Sketching & The Joy of Making
-Syn-Sketching shifts AI from polishing and replacement to rough-sketch co-creation:
+![](/docs/images/codraw_idea.jpg)
 
-- Preserving Creative Agency: Keeps the tactile friction, paper resistance, and gestural flow that make drawing satisfying.
-- Creative Friction & Serendipity: Welcomes noise, overlaps, and physical quirks to break habitual patterns and avoid database-driven sameness.
-- Non-Text Gestural Dialogue: Expresses spatial intent through stroke dynamics instead of rigid text prompts.
+<!---
+```
+┌───────────────────────────────────────────────────────┐
+│               Shared Paper Workspace                  │
+│                                                       │
+│ [ Human Hand ]  ─────── (Stroke Input) ───────┐       │
+│       ▲                                       │       │
+│       │ (Physical Feedback &                  │       │
+│       │  Creative Friction)                   ▼       │
+│       │                                [ AI Engine ]  │
+│       │                                       │       │
+│       │                                       │       │
+│ [ CoDraw Arm ]  ◄── (Physical Pen Output) ────┘       │
+└─────────────────────────┬─────────────────────────────┘
+                          │
+            (Real-Time Vector Kinematics)
+                          ▼
+        [ Live CAD Environment / NURBS Curves ]
+```
+--->
 
-### 2. Real-Time Input & Output in One Loop
-CoDraw merges hand input and machine output into a single live workflow, turning each sketch into usable CAD data as it unfolds:
+## Potential Applications
+- Designers & Engineers: Co-sketch rough ideas with live AI scaffolding directly on paper, streaming clean curves straight into CAD.
+- Kids & Learners: Play, draw, and build spatial intuition on real paper without getting glued to a screen.
+- Rehab: Combine hand movement and physical feedback for cognition.
 
-- Shared Physical-Digital Loop: Human gestures and robotic drawing happen in the same space at the same time, keeping the act of making continuous.
-- CAD as a Live Result: As the sketch progresses, the system converts the interaction into editable digital geometry rather than treating drawing as a separate offline step.
+## Hardware Architecture
+To maintain responsiveness and low latency of physical drawing, gesture tracking and plotter control are split into a dual MCU setup.
 
 ```
- ┌───────────────────────────────────────────────────────────┐
- │                 Shared Paper Workspace                    │
- │                                                           │
- │   [ Human Hand ]  ─────── (Stroke Input) ───────┐         │
- │         ▲                                       │         │
- │         │ (Physical Feedback &                  │         │
- │         │  Creative Friction)                   ▼         │
- │         │                                [ AI Engine ]    │
- │         │                                       │         │
- │         │                                       │         │
- │   [ CoDraw Arm ]  ◄── (Physical Pen Output) ────┘         │
- └─────────────────────────────┬─────────────────────────────┘
-                               │
-                  (Real-Time Vector Kinematics)
-                               ▼
-             [ Live CAD Environment / NURBS Curves ]
-```
-
-## Potential Use Scenarios
-CoDraw's physical-digital fusion could benefit several groups:
-
-- Designers & Engineers: AI could support ideation and form exploration by overlaying guidance directly on paper while preserving the flow of hand sketching.
-- Children & Learners: Physical co-drawing could make learning more tactile and embodied, helping with shape, structure, and spatial understanding.
-- Elderly & Rehabilitation: Real-time tactile feedback and guided drawing could support motor practice, memory recall, and gentle cognitive stimulation.
-
-## Technical Architecture
-
-To ensure temporal alignment and eliminate hardware blocking, CoDraw decouples gesture tracking from plotter actuation using a dual-MCU system.
-
-```
-                  [ Shared Paper Workspace ]
+                [ Shared Paper Workspace ]
                              │
             (Human Input) ┌──┴──┐ (AI Physical Output)
                           │     │
                           ▼     │
 ┌───────────────────────────┐   │   ┌───────────────────────────┐
-│ Input Tracking Arm        │   │   │ Low-Inertia Parallel Arm  │
+│ Input Encoder Arm         │   │   │ Plotter Arm               │
 │ ├─ Passive Linkage        │   │   │ ├─ Base-mounted Steppers  │
-│ ├─ SPI Magnetic Encoders  │   │   │ ├─ Closed-loop            │
+│ ├─ SPI Magnetic Encoders  │   │   │ ├─ Closed-loop Control    │
 │ └─ XIAO RP2040 (#1)       │   │   │ └─ XIAO RP2040 (#2)       │
 └─────────────┬─────────────┘   │   └─────────────▲─────────────┘
               │                 │                 │
@@ -72,12 +67,11 @@ To ensure temporal alignment and eliminate hardware blocking, CoDraw decouples g
               ▼                 │                 │
 ┌───────────────────────────────┴─────────────────┴─────────────┐
 │ AI Processing Host (PC)                                       │
-│ └─ Real-time Vector Path Generation (<30ms Inference Target)  │
+│ └─ Real-Time Vector Path Generation (<30ms target)            │
 └───────────────────────────────────────────────────────────────┘
 ```
 
 ## Roadmap
-
-- [ ] **Phase 1: Input Tracking Arm** — Dual AS5048A SPI reading, Forward Kinematics (FK), and real-time XY stroke visualization on PC.
-- [ ] **Phase 2: Low-Inertia Output Plotter** — Slim 2-DOF parallel linkage CAD, closed-loop stepper control, and Inverse Kinematics (IK).
-- [ ] **Phase 3: Syn-Sketch Loop Integration** — Sub-30ms pipeline integration with real-time vector AI path generation & spatial calibration.
+- [ ] Phase 1: Encoder Arm — Dual AS5048A SPI encoder reading, Forward Kinematics (FK), and live PC stroke display.
+- [ ] Phase 2: Plotter Arm — Lightweight rigid arm, closed-loop stepper control, and Inverse Kinematics (IK).
+- [ ] Phase 3: Full Syn-Sketch Loop — Real-time AI path generation and physical pen integration.
