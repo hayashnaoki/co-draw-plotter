@@ -3,9 +3,9 @@ An arm interface that bridges human hand-drawn input with AI-driven plotter outp
 
 ## Background
 Design tools have shifted through three eras:
-1. Paper & Foam (Analog): Offers immediate physical feedback and tactile joy, but is 1. limited in execution speed and precision.
-1. CAD & 3D Printers (Digital): Delivers high precision, but disconnects the creator 1. through separated input/output and long iteration delays.
-1. Generative AI (Prompts): Provides high speed, but turns creators into passive 1. "prompt-and-wait" observers.
+1. Paper & Foam (Analog): Offers immediate physical feedback and tactile joy, but is limited in execution speed and precision.
+1. CAD & 3D Printers (Digital): Delivers high precision, but disconnects the creator through separated input/output and long iteration delays.
+1. Generative AI (Prompts): Provides high speed, but turns creators into passive "prompt-and-wait" observers.
 
 ## Concept: Integrating Syn-Sketch, Input, and Output
 Instead of complex CAD operations or waiting passively for images to generate, the creator and AI weave a single sketch together in real-time on the exact same sheet of paper.
