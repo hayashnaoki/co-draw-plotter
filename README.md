@@ -1,81 +1,79 @@
 # CoDraw Plotter
-An arm interface that bridges human hand-drawn input with AI-driven plotter output, enabling "Syn-Sketching" between AI and humans.
+A physical drawing interface for real-time human-AI Co-Drawing.
 
-## Background
-Design tools have shifted through three eras:
-1. Paper & Foam (Analog): Offers immediate physical feedback and tactile joy, but is limited in execution speed and precision.
-1. CAD & 3D Printers (Digital): Delivers high precision, but disconnects the creator through separated input/output and long iteration delays.
-1. Generative AI (Prompts): Provides high speed, but turns creators into passive "prompt-and-wait" observers.
+## What is CoDraw
+CoDraw is a desktop drawing system with two robotic arms sharing a single sheet of paper:
 
-## Concept: Integrating Syn-Sketch, Input, and Output
-Instead of complex CAD operations or waiting passively for images to generate, the creator and AI weave a single sketch together in real-time on the exact same sheet of paper.
-
-1. Syn-Sketching & The Joy of Making
-    - Hands-On Agency: Preserves the friction of paper, the flow of ink, and the satisfaction of drawing.
-    - Creative Friction: Welcomes mechanical quirks, hand tremors, and line overlaps to spark unexpected ideas instead of clean, sterile database averages.
-    - Gesture Dialogue: Speaks to the AI through pen strokes rather than rigid text prompts.
-
-2. Physical Input & Live CAD Output
-    - A Single Shared Loop: Hand input and robotic pen output happen simultaneously on the same sheet of paper.
-    - Instant CAD Conversion: As you draw, the encoder arm streams live kinematic data to generate editable curves directly in CAD. No scanning or manual tracing is required.
+- **Encoder Arm (Input):** A passive arm held by your hand that tracks pen movements in real time.
+- **Plotter Arm (Output):** A motorized SCARA arm that draws physical ink strokes alongside human hand.
 
 ![](/docs/images/codraw_idea.jpg)
 
-<!---
-```
-┌───────────────────────────────────────────────────────┐
-│               Shared Paper Workspace                  │
-│                                                       │
-│ [ Human Hand ]  ─────── (Stroke Input) ───────┐       │
-│       ▲                                       │       │
-│       │ (Physical Feedback &                  │       │
-│       │  Creative Friction)                   ▼       │
-│       │                                [ AI Engine ]  │
-│       │                                       │       │
-│       │                                       │       │
-│ [ CoDraw Arm ]  ◄── (Physical Pen Output) ────┘       │
-└─────────────────────────┬─────────────────────────────┘
-                          │
-            (Real-Time Vector Kinematics)
-                          ▼
-        [ Live CAD Environment / NURBS Curves ]
-```
---->
+## Background: Three Eras of Design
+1. **Analog (Paper & Foam):** Great tactile feedback and creative joy, but lacks speed and precision.
+2. **Digital (CAD & 3D Printing):** High precision, but counter-intuitive, separating input from output with long iteration delays.
+3. **Generative AI (Prompts):** Easy, but turns creators into passive "prompt-and-wait" observers.
 
-## Potential Applications
-- Designers & Engineers: Co-sketch rough ideas with live AI scaffolding directly on paper, streaming clean curves straight into CAD.
-- Children and Learners: Play and draw on real paper without looking at a screen, building spatial and visual design skills.
-- Rehabilitation: Combine hand movement and physical feedback to enhance cognition.
+## Concept: Co-Drawing & The Joy of Making
+Instead of typing prompts or waiting for renders, human and the AI weave a single sketch on the same sheet of paper in real time, using drawing both to **communicate** (input) and to **think** (ideation).
 
-## Hardware Architecture
-To maintain responsiveness and low latency of physical drawing, gesture tracking and plotter control are split into a dual MCU setup.
+- **Human Strokes & Agency:** Preserves the tactile flow of ink and direct physical control over every line.
+- **Sketching to Think:** Welcomes line overlaps and raw physical friction to spark unexpected ideas, treating the sketch as a live, evolving prototype.
+- **Sketching to Communicate:** Streams hand strokes as direct spatial input, generating editable NURBS curves in CAD instantly without scanning.
+
+## How It Can Be Used
+- **Designers & Engineers:** Sketch rough concepts on paper while AI overlays structural guidelines, streaming vector paths straight to CAD.
+- **Students & Learners:** Explore spatial thinking through hands-on physical play without staring at a screen.
+- **Rehabilitation:** Combine physical feedback and hand movement for cognitive practice and motor skills.
+
+## How It Works (Dual-MCU System)
 
 ![](/docs/images/codraw_system.jpg)
 
 <!---
 ```
-                [ Shared Paper Workspace ]
-                             │
-            (Human Input) ┌──┴──┐ (AI Physical Output)
-                          │     │
-                          ▼     │
-┌───────────────────────────┐   │   ┌───────────────────────────┐
-│ Input Encoder Arm         │   │   │ Plotter Arm               │
-│ ├─ Passive Linkage        │   │   │ ├─ Base-mounted Steppers  │
-│ ├─ SPI Magnetic Encoders  │   │   │ ├─ Closed-loop Control    │
-│ └─ XIAO RP2040 (#1)       │   │   │ └─ XIAO RP2040 (#2)       │
-└─────────────┬─────────────┘   │   └─────────────▲─────────────┘
-              │                 │                 │
-              │ Serial/USB      │                 │ Serial/USB
-              ▼                 │                 │
-┌───────────────────────────────┴─────────────────┴─────────────┐
-│ AI Processing Host (PC)                                       │
-│ └─ Real-Time Vector Path Generation (<30ms target)            │
-└───────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                 Shared Paper Workspace                    │
+│                                                           │
+│   [ Human Hand ]  ─────── (Stroke Input) ───────┐         │
+│         ▲                                       │         │
+│         │ (Physical Feedback &                  │         │
+│         │  Creative Friction)                   ▼         │
+│         │                                [ AI Engine ]    │
+│         │                                       │         │
+│         │                                       │         │
+│   [ CoDraw Arm ]  ◄── (Physical Pen Output) ────┘         │
+└─────────────────────────────┬─────────────────────────────┘
+                              │
+                 (Real-Time Vector Kinematics)
+                              ▼
+            [ Live CAD Environment / NURBS Curves ]
 ```
 --->
 
+- **Hardware:** Microcontroller #1 reads magnetic encoders on the tracking arm. Microcontroller #2 drives stepper motors on the plotter arm.
+- **Software:** A Python host processes serial inputs, generates AI vector paths, and streams live curves to CAD (Rhino/Grasshopper).
+
 ## Roadmap
-- [ ] Phase 1: Encoder Arm — Dual AS5048A SPI encoder reading, Forward Kinematics (FK), and live PC stroke display.
-- [ ] Phase 2: Plotter Arm — Lightweight rigid arm, closed-loop stepper control, and Inverse Kinematics (IK).
-- [ ] Phase 3: Full Syn-Sketch Loop — Real-time AI path generation and physical pen integration.
+
+### 1. Input Track: Encoder Arm
+
+- [ ]  **Procurement & Cad Design (Sep 2026)**: Order encoders & XIAO RP2040s; CAD 2-DOF passive arm.
+- [ ]  **Firmware & FK (Oct 2026)**: 3D print linkages; write firmware & Forward Kinematics (FK).
+- [ ]  **Calibration (Nov 2026)**: Calibrate encoder resolution, filtering, and physical rigidity.
+- [ ]  **Integration (Dec 2026 – Feb 2027)**: Mount to baseplate; perform high-speed gesture tracking & stress tests.
+
+### 2. Output Track: Plotter Arm
+
+- [ ]  **Procurement & Geometry Study (Sep 2026)**: Order steppers/drivers; design 2-DOF SCARA layout.
+- [ ]  **Mechanism & Wiring (Oct 2026)**: 3D print parallel arm; wire drivers and pen-lift mechanism.
+- [ ]  **Firmware & IK (Nov 2026)**: Write Inverse Kinematics (IK), acceleration, and motor control firmware.
+- [ ]  **Integration (Dec 2026 – Feb 2027)**: Calibrate workspace reach, pen-lift height, and motion safety.
+
+### 3. Integration Track: Software & AI *(Parallel Track)*
+
+- [ ]  **Dev Setup & APIs (Sep 2026)**: Setup Python stack; research Rhino/Grasshopper live streaming APIs.
+- [ ]  **Serial Bridge & NURBS (Oct 2026)**: Build `serial_bridge.py` & stream live NURBS directly in CAD.
+- [ ]  **Path Processing (Nov 2026)**: Add real-time stroke smoothing & vector path preprocessing.
+- [ ]  **Syn-Sketch Engine (Dec 2026 – Jan 2027)**: Build `ai_engine.py`; close sub-30ms real-time loop.
+- [ ]  **Demo & Plugin (Feb 2027)**: Finalize Rhino/Grasshopper plugin & record prototype demo video.
